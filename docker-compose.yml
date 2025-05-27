@@ -1,0 +1,45 @@
+version: '2'
+volumes:
+  schema:
+
+services:
+  db:
+    image: camptocamp/postgres:14-postgis-3
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=password
+
+  schemaspy:
+    image: schemaspy/schemaspy:latest
+    environment:
+      - DATABASE_TYPE=pgsql
+      - DATABASE_HOST=db
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=password
+    #   --link postgres
+    entrypoint:
+      - sh
+    command:
+      - /usr/local/bin/schemaspy
+      - '-t'
+      - pgsql11
+      - '-host'
+      - db
+      - '-db'
+      - postgres
+      - '-u'
+      - 'postgres'
+      - '-p'
+      - password
+      # - '-o'
+      # - /schema
+    volumes:
+      - schema:/output
+
+  server:
+    image: python:alpine
+    volumes:
+      - schema:/schema
+    command: ['python', '-m', 'http.server', '-d', '/schema']
