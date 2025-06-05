@@ -1,8 +1,30 @@
 version: '2'
 volumes:
   schema:
+  qgis-settings:
 
 services:
+  qgis:
+    image: qgis/qgis:release-3_28
+    volumes:
+      - ${PWD}:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - qgis-settings:/root/.local/share/QGIS/QGIS3/profiles/default
+      - ./QGIS3.ini:/QGIS3.ini
+      - ./qgis_entry.sh:/qgis_entry.sh
+      - ./pg_service.conf:/pg_service.conf
+    environment:
+      - PYTHONPATH=/app:/usr/share/qgis/python/plugins/
+      - QGIS_DEBUG=0
+      - QGIS_LOG_FILE=/dev/null
+      - QGIS_PLUGINPATH=/app
+      - DISPLAY=${DISPLAY}
+      - PGSERVICEFILE=/pg_service.conf
+    entrypoint: "/qgis_entry.sh"
+    command:
+      - qgis
+      - /app/relation.qgs
+
   db:
     image: camptocamp/postgres:14-postgis-3
     volumes:

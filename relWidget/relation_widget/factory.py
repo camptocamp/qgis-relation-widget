@@ -20,8 +20,8 @@ class CheckRelationWidgetFactory(QgsAbstractRelationEditorWidgetFactory):
     def create(self, config, parent=None):
         # print("confi1")
         print(f"fact create {config}")
-        print(self.conf)
-        print(self.conf.conf)
+        # print(self.conf)
+        # print(self.conf.conf)
         self.widget = CheckRelationWidget(config, parent)
         return self.widget
 
